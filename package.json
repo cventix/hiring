@@ -11,15 +11,23 @@
   "dependencies": {
     "appwrite": "^4.0.1",
     "bootstrap": "5.1.0",
+    "googleapis": "^87.0.0",
+    "immer": "^9.0.6",
+    "moment": "^2.29.1",
     "next": "11.1.2",
+    "node-appwrite": "^2.5.0",
     "react": "17.0.2",
     "react-bootstrap": "^2.0.0-beta.6",
+    "react-dates": "^21.8.0",
     "react-dom": "17.0.2",
     "react-hook-form": "^7.15.3",
-    "react-hot-toast": "^2.1.1"
+    "react-hot-toast": "^2.1.1",
+    "react-switch": "^6.0.0",
+    "react-vertical-timeline-component": "^3.3.3"
   },
   "devDependencies": {
     "@types/react": "^17.0.20",
+    "@types/react-dates": "^21.8.3",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
     "@typescript-eslint/parser": "^4.31.0",
     "eslint": "^7.32.0",
