@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { teams } from '../../../services/appwrite-server';
+import { teams, users } from '../../../services/appwrite-server';
 import { INVITATION_CALLBACK_URL } from '../../../services/constants';
 import { IMembership } from '../../../services/teams';
 
@@ -24,6 +24,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       ['member'],
       INVITATION_CALLBACK_URL
     );
+    await users.updatePrefs(membership.userId, { workspace: teamId });
 
     return res.status(200).json({ membership });
   } catch (error: any) {
