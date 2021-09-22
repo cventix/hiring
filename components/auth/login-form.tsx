@@ -54,7 +54,9 @@ const LoginForm = () => {
 
       {errors.password && (
         <Alert variant="danger">
-          <span className="text-red-600 text-sm">{errors.password.message}</span>
+          <span className="text-red-600 text-sm">
+            {errors.password.message}
+          </span>
         </Alert>
       )}
 
@@ -84,7 +86,10 @@ const LoginForm = () => {
           placeholder="Password"
           {...register('password', {
             required: { value: true, message: 'Password is required' },
-            minLength: { value: 6, message: 'Password should be at least 6 characters' },
+            minLength: {
+              value: 6,
+              message: 'Password should be at least 6 characters',
+            },
           })}
         />
         <label htmlFor="password">Password</label>
@@ -92,9 +97,13 @@ const LoginForm = () => {
       <button className="w-100 btn btn-lg btn-primary" type="submit">
         Sign in
       </button>
-      <button className="w-100 btn btn-lg btn-link" type="button" onClick={handleLoginAnonymously}>
+      {/* <button
+        className="w-100 btn btn-lg btn-link"
+        type="button"
+        onClick={handleLoginAnonymously}
+      >
         Login Anonymously
-      </button>
+      </button> */}
     </form>
   );
 };

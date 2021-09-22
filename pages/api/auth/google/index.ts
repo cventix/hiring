@@ -8,7 +8,8 @@ type Data = {
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 
 export default (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URL } = process.env;
+  const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URL } =
+    process.env;
   const oAuth2Client = new google.auth.OAuth2(
     GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET,

@@ -14,10 +14,14 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
 
   const { meetingId } = req.body;
-  if (!meetingId) return res.status(400).json({ error: 'meetingId is required' });
+  if (!meetingId)
+    return res.status(400).json({ error: 'meetingId is required' });
 
   try {
-    const meeting: IMeeting = await database.getDocument(MEETINGS_COLLECTION_ID, meetingId);
+    const meeting: IMeeting = await database.getDocument(
+      MEETINGS_COLLECTION_ID,
+      meetingId
+    );
 
     if (!meeting || (meeting && meeting.status === 'MEETING_CANCELED'))
       res.status(404).json({ error: 'Meeting not found!' });

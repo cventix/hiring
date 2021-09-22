@@ -18,7 +18,10 @@ const JoinMeetingPage: React.FC = () => {
       });
       const data = await res.json();
       if (res.status === 404) throw new Error(data.error);
-      toast.success('Meeting canceled successfully', { id: toastId, duration: 5000 });
+      toast.success('Meeting canceled successfully', {
+        id: toastId,
+        duration: 5000,
+      });
     } catch (error: any) {
       console.error(error);
       toast.error(error.message, { id: toastId, duration: 5000 });

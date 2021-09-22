@@ -31,28 +31,35 @@ export interface IMeetingList {
   documents: IMeeting[];
 }
 
-export const getMeetingsList = async (filters?: string[]): Promise<IMeetingList> => {
+export const getMeetingsList = async (
+  filters?: string[]
+): Promise<IMeetingList> => {
   return appwrite.database.listDocuments(MEETINGS_COLLECTION_ID, filters);
 };
 
 export const createMeeting = async (
   job: IJob,
   organizer: string,
-  payload: ICreateMeetingPayload
+  payload: ICreateMeetingPayload,
+  workspaceId: string
 ): Promise<unknown> => {
   const data = {
     ...payload,
     job: {
       ...job,
-      $permissions: { read: ['*'], write: [`user:${organizer}`] },
+      $permissions: {
+        read: ['*'],
+        write: [`user:${organizer}`, `team:${workspaceId}`],
+      },
     },
     organizer,
+    workspace: workspaceId,
   };
   return appwrite.database.createDocument(
     MEETINGS_COLLECTION_ID,
     data,
     ['*'],
-    [`user:${organizer}`]
+    [`user:${organizer}`, `team:${workspaceId}`]
   );
 };
 
@@ -61,12 +68,15 @@ interface ISetMeetingPayload {
   invitationId: string;
 }
 
-export const setMeeting = async (payload: ISetMeetingPayload): Promise<unknown> => {
-  const session = appwrite.account.getSession('current');
-  if (!session) {
-    await appwrite.account.createAnonymousSession();
-  }
-  return appwrite.functions.createExecution('614753e7025ee', JSON.stringify(payload));
+export const scheduleMeeting = async (
+  payload: ISetMeetingPayload
+): Promise<unknown> => {
+  const res = await fetch('/api/meetings/schedule', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' },
+  });
+  return res.json();
 };
 
 export const cancelMeeting = async (meetingId: string): Promise<IMeeting> => {

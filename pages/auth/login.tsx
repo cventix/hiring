@@ -5,7 +5,7 @@ import AuthLayout from '../../layouts/auth-layout';
 const LoginPage = () => {
   return (
     <AuthLayout>
-      <OAuthProviders />
+      {/* <OAuthProviders /> */}
       <LoginForm />
     </AuthLayout>
   );

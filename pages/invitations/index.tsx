@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { WorkspaceContext } from '../../contexts/workspace-context';
 import { withDashboardLayout } from '../../layouts/dashboard-layout';
 import { getInvitations, IInvitation } from '../../services/invitations';
 
@@ -9,18 +10,22 @@ interface IJobInvitations {
 
 const InvitationsPage: React.FC = () => {
   const [invitations, setInvitations] = useState<IJobInvitations>({});
+  const { workspace } = useContext(WorkspaceContext);
 
   const fetchInvitationsList = async () => {
     let toastId;
     try {
       toastId = toast.loading('Loading...');
-      const list = await getInvitations();
+      const list = await getInvitations([`workspace=${workspace}`]);
 
-      const invitations = list.documents.reduce((state: IJobInvitations, current: IInvitation) => {
-        if (!state[current.job.title]) state[current.job.title] = [];
-        state[current.job.title].push(current);
-        return state;
-      }, {});
+      const invitations = list.documents.reduce(
+        (state: IJobInvitations, current: IInvitation) => {
+          if (!state[current.job.title]) state[current.job.title] = [];
+          state[current.job.title].push(current);
+          return state;
+        },
+        {}
+      );
       setInvitations(invitations);
       toast.success('Invitations Loaded successfully', { id: toastId });
     } catch (error: any) {
@@ -30,15 +35,17 @@ const InvitationsPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchInvitationsList();
-  }, []);
+    if (workspace) fetchInvitationsList();
+  }, [workspace]);
 
   return (
     <div className="mb-4 rounded-3">
       <div className="container-fluid">
         <h1 className="display-5 fw-bold mt-0">Invitations</h1>
         <div className="d-flex justify-content-between">
-          <p className="col-md-8 fs-4">Here, you can see list of your invitations.</p>
+          <p className="col-md-8 fs-4">
+            Here, you can see list of your invitations.
+          </p>
         </div>
         <hr />
 

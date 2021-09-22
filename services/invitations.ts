@@ -24,6 +24,8 @@ export interface IInvitationsList {
   documents: IInvitation[];
 }
 
-export const getInvitations = async (filters?: string[]): Promise<IInvitationsList> => {
+export const getInvitations = async (
+  filters?: string[]
+): Promise<IInvitationsList> => {
   return appwrite.database.listDocuments(INVITATIONS_COLLECTION_ID, filters);
 };

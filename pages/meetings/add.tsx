@@ -1,11 +1,12 @@
 import moment from 'moment';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { withDashboardLayout } from '../../layouts/dashboard-layout';
 import { getJobsList, IJob } from '../../services/jobs';
 import { createMeeting, ICreateMeetingPayload } from '../../services/meetings';
 import { useAuth } from '../../hooks/useAuth';
+import { WorkspaceContext } from '../../contexts/workspace-context';
 
 type DefineMeetingFormType = {
   jobId: string;
@@ -28,21 +29,40 @@ const AddMeetingsPage: React.FC = () => {
   } = useForm<DefineMeetingFormType>();
   const duration = useWatch({ control, name: 'duration', defaultValue: 10 });
   const [jobs, setJobs] = useState<IJob[]>([]);
+  const { workspace } = useContext(WorkspaceContext);
 
   const getJobs = async () => {
-    const { documents, sum } = await getJobsList();
-    setJobs(documents);
+    let toastId;
+    try {
+      toastId = toast.loading('Loading...');
+      const { documents, sum } = await getJobsList([`workspace=${workspace}`]);
+      setJobs(documents);
+      toast.success('Jobs loaded successfully', { id: toastId });
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message, { id: toastId });
+    }
   };
 
   const onSubmit = async (data: DefineMeetingFormType) => {
     let toastId;
     try {
       toastId = toast.loading('Loading...');
-      const { date, start, end, jobId, summary, description, timeZone, duration } = data;
+      const {
+        date,
+        start,
+        end,
+        jobId,
+        summary,
+        description,
+        timeZone,
+        duration,
+      } = data;
       const job = jobs.find((j) => j.$id === jobId);
       const startDate = moment(`${date} ${start}`);
       const endDate = moment(`${date} ${end}`);
-      if (endDate.isBefore(startDate)) throw new Error('End must be grater than Start');
+      if (endDate.isBefore(startDate))
+        throw new Error('End must be grater than Start');
       while (startDate.isBefore(endDate)) {
         const payload: ICreateMeetingPayload = {
           summary,
@@ -51,11 +71,11 @@ const AddMeetingsPage: React.FC = () => {
           start: startDate.toISOString(),
           timezone: timeZone ? timeZone : 'Asia/Tehran',
         };
-        startDate.add('minutes', duration);
+        startDate.add(duration, 'minutes');
         payload['end'] = startDate.toISOString();
 
         if (job && account) {
-          await createMeeting(job, account.$id, payload);
+          await createMeeting(job, account.$id, payload, workspace);
         }
       }
       toast.success('Successfully Defined', { id: toastId });
@@ -71,7 +91,7 @@ const AddMeetingsPage: React.FC = () => {
     const times = [];
     while (start.isBefore(end)) {
       times.push(start.format('HH:mm'));
-      start.add('minutes', duration);
+      start.add(duration, 'minutes');
     }
     return times.map((time) => (
       <option key={time} value={time}>
@@ -81,8 +101,8 @@ const AddMeetingsPage: React.FC = () => {
   };
 
   useEffect(() => {
-    getJobs();
-  }, []);
+    if (workspace) getJobs();
+  }, [workspace]);
 
   useEffect(() => {
     renderTimes();
@@ -93,7 +113,8 @@ const AddMeetingsPage: React.FC = () => {
       <div className="container-fluid">
         <h1 className="display-5 fw-bold mt-0">Meetings</h1>
         <p className="col-md-8 fs-4">
-          Define your available times. Candidates can select from the list of available times.
+          Define your available times. Candidates can select from the list of
+          available times.
         </p>
         <hr />
         <div className="col-md-7 col-lg-8">
@@ -191,7 +212,12 @@ const AddMeetingsPage: React.FC = () => {
                 className="form-control"
                 id="date"
                 placeholder="Apartment or suite"
-                {...register('date', { required: { message: 'Date is required', value: true } })}
+                {...register('date', {
+                  required: { message: 'Date is required', value: true },
+                  validate: (date: string) =>
+                    !moment(date).isBefore(moment().subtract(1, 'day')) ||
+                    'Date should be equal or grater than today',
+                })}
               />
               {errors && errors.date && (
                 <small className="text-danger">{errors.date.message}</small>
@@ -224,12 +250,16 @@ const AddMeetingsPage: React.FC = () => {
               <select
                 className="form-select"
                 id="end"
-                {...register('end', { required: { message: 'End is required', value: true } })}
+                {...register('end', {
+                  required: { message: 'End is required', value: true },
+                })}
               >
                 <option value="">Choose...</option>
                 {renderTimes()}
               </select>
-              {errors && errors.end && <small className="text-danger">{errors.end.message}</small>}
+              {errors && errors.end && (
+                <small className="text-danger">{errors.end.message}</small>
+              )}
             </div>
           </div>
 

@@ -17,3 +17,4 @@ export const users = new sdk.Users(client);
 export const storage = new sdk.Storage(client);
 export const teams = new sdk.Teams(client);
 export const account = new sdk.Account(client);
+export const functions = new sdk.Functions(client);

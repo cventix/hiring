@@ -1,18 +1,23 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { WorkspaceContext } from '../../../contexts/workspace-context';
 import { withDashboardLayout } from '../../../layouts/dashboard-layout';
 import { getInvitations, IInvitation } from '../../../services/invitations';
 
 const JobInvitationsPage: React.FC = () => {
   const { push, query } = useRouter();
   const [invitations, setInvitations] = useState<IInvitation[]>([]);
+  const { workspace } = useContext(WorkspaceContext);
 
   async function fetchJob(jobId: string) {
     let toastId;
     try {
       toastId = toast.loading('Loading...');
-      const list = await getInvitations([`job.$id=${jobId}`]);
+      const list = await getInvitations([
+        `workspace=${workspace}`,
+        `job.$id=${jobId}`,
+      ]);
       setInvitations(list.documents);
       toast.success('Invitations Loaded successfully', { id: toastId });
     } catch (error: any) {
@@ -29,7 +34,9 @@ const JobInvitationsPage: React.FC = () => {
     <div className="mb-4 rounded-3">
       <div className="container-fluid">
         <h1 className="display-5 fw-bold mt-0">Invitations</h1>
-        <p className="col-md-8 fs-4">Here, you can see list of the invitations.</p>
+        <p className="col-md-8 fs-4">
+          Here, you can see list of the invitations.
+        </p>
 
         <hr />
 

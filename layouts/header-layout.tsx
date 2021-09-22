@@ -2,15 +2,31 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 const menuItems = [
-  { title: 'Dashboard', href: '/dashboard', icon: '/dashboard.svg', iconW: '/dashboard-w.svg' },
+  {
+    title: 'Dashboard',
+    href: '/dashboard',
+    icon: '/dashboard.svg',
+    iconW: '/dashboard-w.svg',
+  },
   // { title: 'Teams', href: '/teams', icon: '/teams.svg', iconW: '/teams-w.svg' },
   { title: 'Jobs', href: '/jobs', icon: '/jobs.svg', iconW: '/jobs-w.svg' },
-  { title: 'Meetings', href: '/meetings', icon: '/meetings.svg', iconW: '/meetings-w.svg' },
+  {
+    title: 'Meetings',
+    href: '/meetings',
+    icon: '/meetings.svg',
+    iconW: '/meetings-w.svg',
+  },
   {
     title: 'Invitations',
     href: '/invitations',
     icon: '/invitations.svg',
     iconW: '/invitations-w.svg',
+  },
+  {
+    title: 'Workspaces',
+    href: '/workspaces',
+    icon: '/workspaces.svg',
+    iconW: '/workspaces-w.svg',
   },
 ];
 

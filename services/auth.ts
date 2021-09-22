@@ -1,4 +1,5 @@
 import { appwrite } from './appwrite';
+import { OAUTH_CALLBACK_URL } from './constants';
 
 export interface IAccount {
   $id: string;
@@ -12,9 +13,12 @@ export interface IAccount {
 }
 
 const _loginUsingOAuthProvider = (provider: string) => {
-  appwrite.account.createOAuth2Session(provider, 'http://localhost:3000', 'http://localhost:3000', [
-    'https://www.googleapis.com/auth/calendar',
-  ]);
+  appwrite.account.createOAuth2Session(
+    provider,
+    OAUTH_CALLBACK_URL,
+    OAUTH_CALLBACK_URL,
+    ['https://www.googleapis.com/auth/calendar']
+  );
 };
 
 export const loginUsingGithub = () => {
@@ -25,7 +29,10 @@ export const loginUsingGoogle = () => {
   _loginUsingOAuthProvider('google');
 };
 
-export const loginUsingCredentials = async (email: string, password: string): Promise<unknown> => {
+export const loginUsingCredentials = async (
+  email: string,
+  password: string
+): Promise<unknown> => {
   return appwrite.account.createSession(email, password);
 };
 
@@ -42,10 +49,14 @@ export const loginAnonymously = async (): Promise<IAccount> => {
   return appwrite.account.createAnonymousSession();
 };
 
-export const updateEmail = async (email: string, password: string): Promise<IAccount> => {
+export const updateEmail = async (
+  email: string,
+  password: string
+): Promise<IAccount> => {
   return appwrite.account.updateEmail(email, password);
 };
 
 export const updateUserPrefs = async (prefs: object): Promise<IAccount> => {
-  return appwrite.account.updatePrefs(prefs);
+  const existingPrefs: object = await appwrite.account.getPrefs();
+  return appwrite.account.updatePrefs({ ...existingPrefs, ...prefs });
 };

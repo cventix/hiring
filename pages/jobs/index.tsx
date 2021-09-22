@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Switch from 'react-switch';
 import produce from 'immer';
 import { withDashboardLayout } from '../../layouts/dashboard-layout';
 import { getJobsList, IJob, updateJobStatus } from '../../services/jobs';
 import toast from 'react-hot-toast';
+import { WorkspaceContext } from '../../contexts/workspace-context';
 
 interface IJobStatus {
   status: boolean;
@@ -16,13 +17,16 @@ const JobsPage: React.FC = () => {
   const { push } = useRouter();
   const [jobs, setJobs] = useState<IJob[]>([]);
   const [jobStatus, setJobStatus] = useState<IJobStatus[]>([]);
+  const { workspace } = useContext(WorkspaceContext);
 
   const fetchJobsList = async () => {
     let toastId;
     try {
       toastId = toast.loading('Loading...');
-      const list = await getJobsList();
-      setJobStatus(list.documents.map((job) => ({ id: job.$id, status: job.isEnabled })));
+      const list = await getJobsList([`workspace=${workspace}`]);
+      setJobStatus(
+        list.documents.map((job) => ({ id: job.$id, status: job.isEnabled }))
+      );
       setJobs(list.documents);
       toast.success('Jobs Loaded successfully', { id: toastId });
     } catch (error: any) {
@@ -32,7 +36,6 @@ const JobsPage: React.FC = () => {
   };
 
   const handleChangeJobStatus = async (status: boolean, jobId: string) => {
-    let toastId;
     try {
       setJobStatus((prev) =>
         produce(prev, (draft) => {
@@ -44,13 +47,10 @@ const JobsPage: React.FC = () => {
           }
         })
       );
-      toastId = toast.loading('Loading...');
       await updateJobStatus(jobId, status);
       await fetchJobsList();
-      toast.success('Status updated successfully', { id: toastId });
     } catch (error: any) {
       console.error(error);
-      toast.error(error.message, { id: toastId });
     }
   };
 
@@ -60,8 +60,8 @@ const JobsPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchJobsList();
-  }, []);
+    if (workspace) fetchJobsList();
+  }, [workspace]);
 
   return (
     <div className="mb-4 rounded-3">
@@ -97,7 +97,9 @@ const JobsPage: React.FC = () => {
                 </td>
                 <td>
                   <Switch
-                    onChange={(checked) => handleChangeJobStatus(checked, job.$id)}
+                    onChange={(checked) =>
+                      handleChangeJobStatus(checked, job.$id)
+                    }
                     checked={getJobStatus(job.$id)}
                     height={20}
                     width={38}
