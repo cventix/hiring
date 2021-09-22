@@ -85,7 +85,6 @@ const WorkspaceMembersPage: React.FC = () => {
               <th scope="col">Name</th>
               <th scope="col">Email</th>
               <th scope="col">Verified</th>
-              <th scope="col">Invited</th>
               <th scope="col">Joined</th>
               <th scope="col">Roles</th>
             </tr>
@@ -97,9 +96,6 @@ const WorkspaceMembersPage: React.FC = () => {
                 <td>{membership.name}</td>
                 <td>{membership.email}</td>
                 <td>{membership.confirm ? 'Verified' : 'Not-Verified'}</td>
-                <td>
-                  {moment(membership.invited * 1000).format('YYYY-MM-DD')}
-                </td>
                 <td>{moment(membership.joined * 1000).format('YYYY-MM-DD')}</td>
                 <td>
                   {membership.roles.map((role) => (
