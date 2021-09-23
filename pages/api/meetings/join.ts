@@ -24,7 +24,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     );
 
     if (!meeting || (meeting && meeting.status === 'MEETING_CANCELED'))
-      res.status(404).json({ error: 'Meeting not found!' });
+      return res.status(404).json({ error: 'Meeting not found!' });
 
     return res.status(200).json({ link: meeting.link });
   } catch (error) {

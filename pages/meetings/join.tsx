@@ -17,6 +17,7 @@ const JoinMeetingPage: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
       });
       const data = await res.json();
+      if (res.status === 404) throw new Error(data.error);
       toast.success('Link generated successfully', { id: toastId });
       setTimeout(() => {
         window.location.replace(data.link);
