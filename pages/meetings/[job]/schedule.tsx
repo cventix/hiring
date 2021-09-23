@@ -18,6 +18,7 @@ const ScheduleMeetingPage: React.FC = () => {
   const [focused, setFocused] = useState(false);
   const [meetings, setMeetings] = useState<IMeeting[]>([]);
   const [filteredMeetings, setFilteredMeetings] = useState<IMeeting[]>([]);
+  const [isCompleted, setIsCompleted] = useState<boolean>(false);
 
   const fetchJobsList = async (
     jobId: string,
@@ -46,6 +47,7 @@ const ScheduleMeetingPage: React.FC = () => {
         toastId = toast.loading('Loading...');
         await scheduleMeeting({ meetingId, invitationId: invitation });
         toast.success('Successfully Scheduled', { id: toastId });
+        setIsCompleted(true);
       } catch (error: any) {
         console.error(error);
         toast.error(error.message, { id: toastId });
@@ -69,6 +71,21 @@ const ScheduleMeetingPage: React.FC = () => {
       );
     }
   }, [date, meetings]);
+
+  if (isCompleted)
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="mb-4 rounded-3">
+          <div className="container">
+            <h1 className="display-5 fw-bold mt-0">Thank you!</h1>
+            <p className="col-md-12 fs-4">
+              Your meeting has been scheduled successfully. See you soon :)
+            </p>
+            <div className="d-flex justify-content-center"></div>
+          </div>
+        </div>
+      </div>
+    );
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">

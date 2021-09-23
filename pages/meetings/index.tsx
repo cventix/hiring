@@ -112,20 +112,26 @@ const JobsPage: React.FC = () => {
                       meeting.end
                     ).format('HH:mm')}`}</td>
                     <td>
-                      <button
-                        disabled={meeting.status !== 'MEETING_RESERVED'}
-                        className="btn btn-warning btn-sm mx-1"
-                        onClick={() => window.open(meeting.link, '_blank')}
-                      >
-                        Join
-                      </button>
-                      <button
-                        disabled={meeting.status === 'MEETING_CANCELED'}
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleCancelMeeting(meeting.$id)}
-                      >
-                        Cancel
-                      </button>
+                      {meeting.status === 'MEETING_CANCELED' ? (
+                        <span className="badge bg-secondary">Canceled</span>
+                      ) : (
+                        <>
+                          <button
+                            disabled={meeting.status !== 'MEETING_RESERVED'}
+                            className="btn btn-warning btn-sm mx-1"
+                            onClick={() => window.open(meeting.link, '_blank')}
+                          >
+                            Join
+                          </button>
+                          <button
+                            disabled={meeting.status === 'MEETING_CANCELED'}
+                            className="btn btn-danger btn-sm"
+                            onClick={() => handleCancelMeeting(meeting.$id)}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
