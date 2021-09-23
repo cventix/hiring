@@ -20,7 +20,7 @@ const ImportJobPage: React.FC = () => {
         console.log('#file', uploadedFile);
         const exec = await importFromExcelFile(
           uploadedFile.$id,
-          uploadFile.name
+          uploadedFile.name
         );
         console.log('#exec', exec);
       } catch (error) {
