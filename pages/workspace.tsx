@@ -3,6 +3,7 @@ import { useContext, useState } from 'react';
 import toast from 'react-hot-toast';
 import { WorkspaceContext } from '../contexts/workspace-context';
 import { withSimpleLayout } from '../layouts/simple-layout';
+import { updateUserPrefs } from '../services/auth';
 import { createTeam } from '../services/teams';
 
 const WorkspacePage: React.FC = () => {
@@ -16,6 +17,7 @@ const WorkspacePage: React.FC = () => {
       try {
         toastId = toast.loading('Loading...');
         const workspace = await createTeam(team);
+        await updateUserPrefs({ workspace: workspace.$id });
         setWorkspace(workspace.$id);
         toast.success('Workspace created successfully', { id: toastId });
         setTimeout(() => {
