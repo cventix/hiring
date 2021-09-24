@@ -1,4 +1,4 @@
-export const PROJECT_ENDPOINT = 'https://teammaker.org/v1';
+export const PROJECT_ENDPOINT = 'https://api.hiring.irantoptal.ir/v1';
 export const PROJECT_ID = '613d72a9526d2';
 
 // Collections

@@ -85,11 +85,11 @@ const AddMeetingsPage: React.FC = () => {
     }
   };
 
-  const renderTimes = () => {
+  const renderTimes = (duration: number) => {
     const start = moment('1970-01-01 00:00');
     const end = moment('1970-01-01 23:59');
     const times = [];
-    while (start.isBefore(end)) {
+    while (start.isBefore(end) && duration >= 10) {
       times.push(start.format('HH:mm'));
       start.add(duration, 'minutes');
     }
@@ -103,10 +103,6 @@ const AddMeetingsPage: React.FC = () => {
   useEffect(() => {
     if (workspace) getJobs();
   }, [workspace]);
-
-  useEffect(() => {
-    renderTimes();
-  }, [duration]);
 
   return (
     <div className="mb-4 rounded-3">
@@ -236,7 +232,7 @@ const AddMeetingsPage: React.FC = () => {
                 })}
               >
                 <option value="">Choose...</option>
-                {renderTimes()}
+                {renderTimes(duration)}
               </select>
               {errors && errors.start && (
                 <small className="text-danger">{errors.start.message}</small>
@@ -255,7 +251,7 @@ const AddMeetingsPage: React.FC = () => {
                 })}
               >
                 <option value="">Choose...</option>
-                {renderTimes()}
+                {renderTimes(duration)}
               </select>
               {errors && errors.end && (
                 <small className="text-danger">{errors.end.message}</small>
