@@ -130,6 +130,7 @@ const JobsPage: React.FC = () => {
                       ) : (
                         <>
                           <button
+                            disabled={meeting.status !== 'MEETING_RESERVED'}
                             className="btn btn-primary btn-sm"
                             onClick={() => handleSendMeetingReminder(meeting)}
                           >
