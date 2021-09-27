@@ -1,3 +1,4 @@
+import moment from 'moment';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { database } from '../../../services/appwrite-server';
 import { MEETINGS_COLLECTION_ID } from '../../../services/constants';
@@ -27,6 +28,15 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
     if (meeting && meeting.status === 'MEETING_CANCELED')
       return res.status(404).json({ error: 'Meeting has been canceled!' });
+
+    if (moment(meeting.start).diff(moment(), 'minutes') > 5)
+      return res.status(400).json({
+        error: 'You can only join only 5 minutes before the Meeting',
+      });
+
+    await database.updateDocument(MEETINGS_COLLECTION_ID, meetingId, {
+      status: 'MEETING_ATTENDED',
+    });
 
     return res.status(200).json({ link: meeting.link });
   } catch (error) {
