@@ -84,3 +84,12 @@ export const cancelMeeting = async (meetingId: string): Promise<IMeeting> => {
     status: 'MEETING_CANCELED',
   });
 };
+
+export const sendMeetingReminder = async (
+  meeting: IMeeting
+): Promise<unknown> => {
+  return appwrite.functions.createExecution(
+    '6152120c10300',
+    JSON.stringify(meeting)
+  );
+};

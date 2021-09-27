@@ -7,6 +7,7 @@ import {
   cancelMeeting,
   getMeetingsList,
   IMeeting,
+  sendMeetingReminder,
 } from '../../services/meetings';
 
 interface IJobMeetings {
@@ -54,6 +55,18 @@ const JobsPage: React.FC = () => {
         success: 'Meeting canceled successfully',
         error: 'Error Occured',
       });
+    }
+  };
+
+  const handleSendMeetingReminder = async (meeting: IMeeting) => {
+    let toastId;
+    try {
+      toastId = toast.loading('Loading...');
+      await sendMeetingReminder(meeting);
+      toast.success('Reminder sent successfully', { id: toastId });
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.message, { id: toastId });
     }
   };
 
@@ -117,18 +130,36 @@ const JobsPage: React.FC = () => {
                       ) : (
                         <>
                           <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => handleSendMeetingReminder(meeting)}
+                          >
+                            <img
+                              src="/sms-reminder.svg"
+                              alt="sms reminder"
+                              title="sms reminder"
+                            />
+                          </button>
+                          <button
                             disabled={meeting.status !== 'MEETING_RESERVED'}
                             className="btn btn-warning btn-sm mx-1"
                             onClick={() => window.open(meeting.link, '_blank')}
                           >
-                            Join
+                            <img
+                              src="/join.svg"
+                              alt="join meeting"
+                              title="join meeting"
+                            />
                           </button>
                           <button
                             disabled={meeting.status === 'MEETING_CANCELED'}
                             className="btn btn-danger btn-sm"
                             onClick={() => handleCancelMeeting(meeting.$id)}
                           >
-                            Cancel
+                            <img
+                              src="/cancel.svg"
+                              alt="cancel meeting"
+                              title="cancel meeting"
+                            />
                           </button>
                         </>
                       )}
