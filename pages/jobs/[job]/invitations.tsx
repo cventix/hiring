@@ -4,10 +4,14 @@ import toast from 'react-hot-toast';
 import { WorkspaceContext } from '../../../contexts/workspace-context';
 import { withDashboardLayout } from '../../../layouts/dashboard-layout';
 import { getInvitations, IInvitation } from '../../../services/invitations';
+import { AddNoteModal } from '../../invitations';
 
 const JobInvitationsPage: React.FC = () => {
   const { push, query } = useRouter();
   const [invitations, setInvitations] = useState<IInvitation[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedInvitation, setSelectedInvitation] =
+    useState<IInvitation | null>(null);
   const { workspace } = useContext(WorkspaceContext);
 
   async function fetchJob(jobId: string) {
@@ -25,6 +29,16 @@ const JobInvitationsPage: React.FC = () => {
       toast.error(error.message, { id: toastId });
     }
   }
+
+  const handleAddNote = async (invitation: IInvitation) => {
+    setSelectedInvitation(invitation);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedInvitation(null);
+    setShowModal(false);
+  };
 
   useEffect(() => {
     if (query.job && typeof query.job === 'string') fetchJob(query.job);
@@ -48,6 +62,7 @@ const JobInvitationsPage: React.FC = () => {
               <th scope="col">Email</th>
               <th scope="col">Mobile</th>
               <th scope="col">Submitted At</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -58,11 +73,24 @@ const JobInvitationsPage: React.FC = () => {
                 <td>{invitation.email}</td>
                 <td>{invitation.mobile}</td>
                 <td>{invitation.submittedAt}</td>
+                <td>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => handleAddNote(invitation)}
+                  >
+                    Add Note
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      <AddNoteModal
+        show={showModal}
+        handleClose={() => handleCloseModal()}
+        invitation={selectedInvitation}
+      />
     </div>
   );
 };

@@ -79,7 +79,7 @@ const ScheduleMeetingPage: React.FC = () => {
           <div className="container">
             <h1 className="display-5 fw-bold mt-0">Thank you!</h1>
             <p className="col-md-12 fs-4">
-              Your meeting has been scheduled successfully. See you soon :)
+              Your meeting scheduled successfully. See you soon :)
             </p>
             <div className="d-flex justify-content-center"></div>
           </div>

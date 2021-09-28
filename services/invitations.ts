@@ -1,5 +1,6 @@
 import { appwrite } from './appwrite';
-import { INVITATIONS_COLLECTION_ID } from './constants';
+import { IAccount } from './auth';
+import { INVITATIONS_COLLECTION_ID, NOTES_COLLECTION_ID } from './constants';
 import { IJob } from './jobs';
 import { IMeeting } from './meetings';
 
@@ -17,6 +18,21 @@ export interface IInvitation {
   submittedAt: string;
   job: IJob;
   meeting: IMeeting;
+  notes: IInvitationNote[];
+}
+
+export interface IInvitationNote {
+  $collection: string;
+  $id: string;
+  $permissions: {
+    write: string[];
+    read: string[];
+  };
+  user: string;
+  text: string;
+  invitation: string;
+  mentions: string[];
+  createdAt: string;
 }
 
 export interface IInvitationsList {
@@ -28,4 +44,33 @@ export const getInvitations = async (
   filters?: string[]
 ): Promise<IInvitationsList> => {
   return appwrite.database.listDocuments(INVITATIONS_COLLECTION_ID, filters);
+};
+
+export const addInvitationNote = async (
+  invitation: IInvitation,
+  noteText: string,
+  user: IAccount
+): Promise<IInvitation> => {
+  const note: IInvitationNote = await appwrite.database.createDocument(
+    NOTES_COLLECTION_ID,
+    {
+      user: JSON.stringify({ id: user.$id, name: user.name }),
+      invitation: invitation.$id,
+      text: noteText,
+      createdAt: new Date().toISOString(),
+    },
+    [`user:${user.$id}`],
+    [`user:${user.$id}`]
+  );
+
+  // Define notes Array
+  let notes = [];
+  if (invitation.notes) notes = [...invitation.notes, note];
+  else notes = [note];
+
+  return appwrite.database.updateDocument(
+    INVITATIONS_COLLECTION_ID,
+    invitation.$id,
+    { notes }
+  );
 };
