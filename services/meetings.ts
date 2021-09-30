@@ -34,7 +34,7 @@ export interface IMeetingList {
 export const getMeetingsList = async (
   filters?: string[]
 ): Promise<IMeetingList> => {
-  return appwrite.database.listDocuments(MEETINGS_COLLECTION_ID, filters);
+  return appwrite.database.listDocuments(MEETINGS_COLLECTION_ID, filters, 100);
 };
 
 export const createMeeting = async (
