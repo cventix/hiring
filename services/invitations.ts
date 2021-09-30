@@ -43,7 +43,7 @@ export interface IInvitationsList {
 export const getInvitations = async (
   filters?: string[]
 ): Promise<IInvitationsList> => {
-  return appwrite.database.listDocuments(INVITATIONS_COLLECTION_ID, filters);
+  return appwrite.database.listDocuments(INVITATIONS_COLLECTION_ID, filters, 100);
 };
 
 export const addInvitationNote = async (
