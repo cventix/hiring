@@ -25,7 +25,7 @@ const JobsPage: React.FC = () => {
       toastId = toast.loading('Loading...');
       const filters: string[] =
         filter === 'ALL'
-          ? [`workspace=${workspace}`]
+          ? [`workspace=${workspace}`, `status=NOT_STARTED`]
           : [`workspace=${workspace}`, `status=${filter}`];
       const list = await getMeetingsList(filters);
 

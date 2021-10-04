@@ -31,6 +31,7 @@ const ScheduleMeetingPage: React.FC = () => {
         `workspace=${workspaceId}`,
         `job.$id=${jobId}`,
         'job.isEnabled=1',
+        'status=NOT_STARTED',
       ]);
       setMeetings(list.documents);
       toast.success('Available meetings loaded successfully', { id: toastId });
@@ -119,7 +120,10 @@ const ScheduleMeetingPage: React.FC = () => {
               style={{ width: 1, backgroundColor: '#000' }}
               className="mx-4"
             ></div>
-            <div className="d-flex flex-column" style={{ width: 300 }}>
+            <div
+              className="d-flex flex-column"
+              style={{ width: 300, maxHeight: 330, overflowY: 'scroll' }}
+            >
               {filteredMeetings.map((meeting) => (
                 <button
                   key={meeting.$id}
