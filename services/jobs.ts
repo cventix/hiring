@@ -21,11 +21,12 @@ export interface IJobsList {
 
 export const importFromExcelFile = async (
   fileId: string,
-  fileName: string
+  fileName: string,
+  jobId?: string | null
 ): Promise<unknown> => {
   return appwrite.functions.createExecution(
     '6141f74e018e8',
-    JSON.stringify({ fileId, fileName })
+    JSON.stringify({ fileId, fileName, jobId })
   );
 };
 
