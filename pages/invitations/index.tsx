@@ -26,7 +26,10 @@ const InvitationsPage: React.FC = () => {
     let toastId;
     try {
       toastId = toast.loading('Loading...');
-      const list = await getInvitations([`workspace=${workspace}`]);
+      const list = await getInvitations([
+        `workspace=${workspace}`,
+        `job!=null`,
+      ]);
 
       const invitations = list.documents.reduce(
         (state: IJobInvitations, current: IInvitation) => {
@@ -69,42 +72,63 @@ const InvitationsPage: React.FC = () => {
         </div>
         <hr />
 
-        {Object.keys(invitations).map((key) => (
-          <div className="mb-5" key={key}>
-            <h3>{key}</h3>
-            <table className="table mt-5">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Mobile</th>
-                  <th scope="col">Submitted At</th>
-                  <th scope="col">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invitations[key].map((invitation, index: number) => (
-                  <tr key={invitation.$id}>
-                    <th scope="row">{index + 1}</th>
-                    <td>{invitation.name}</td>
-                    <td>{invitation.email}</td>
-                    <td>{invitation.mobile}</td>
-                    <td>{invitation.submittedAt}</td>
-                    <td>
-                      <button
-                        className="btn btn-primary btn-sm"
-                        onClick={() => handleAddNote(invitation)}
-                      >
-                        Add Note
-                      </button>
-                    </td>
+        {Object.keys(invitations).length ? (
+          Object.keys(invitations).map((key) => (
+            <div className="mb-5" key={key}>
+              <h3>{key}</h3>
+              <table className="table mt-5">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Mobile</th>
+                    <th scope="col">Submitted At</th>
+                    <th scope="col">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {invitations[key].map((invitation, index: number) => (
+                    <tr key={invitation.$id}>
+                      <th scope="row">{index + 1}</th>
+                      <td>{invitation.name}</td>
+                      <td>{invitation.email}</td>
+                      <td>{invitation.mobile}</td>
+                      <td>{invitation.submittedAt}</td>
+                      <td>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          onClick={() => handleAddNote(invitation)}
+                        >
+                          Add Note
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))
+        ) : (
+          <div
+            className="alert alert-warning d-flex align-items-center"
+            role="alert"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              className="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"
+              viewBox="0 0 16 16"
+              role="img"
+              aria-label="Warning:"
+            >
+              <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+            </svg>
+            <div>There is no invitation</div>
           </div>
-        ))}
+        )}
       </div>
       <AddNoteModal
         show={showModal}
