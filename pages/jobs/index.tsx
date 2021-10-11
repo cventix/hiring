@@ -86,6 +86,7 @@ const JobsPage: React.FC = () => {
               <th scope="col">#</th>
               <th scope="col">Title</th>
               <th scope="col">Status</th>
+              <th scope="col">Reserved Meetings</th>
             </tr>
           </thead>
           <tbody>
@@ -107,6 +108,9 @@ const JobsPage: React.FC = () => {
                     uncheckedIcon={false}
                     offColor="#dc3545"
                   />
+                </td>
+                <td>
+                  <Link href={`/meetings/${job.$id}/list`}>Show List</Link>
                 </td>
               </tr>
             ))}
