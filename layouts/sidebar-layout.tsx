@@ -50,7 +50,13 @@ const menuItems = {
   ],
   meetings: [
     {
-      title: 'Meetings List',
+      title: 'Upcomming Meetings',
+      href: '/meetings/upcomming',
+      icon: '/meetings.svg',
+      iconW: '/meetings-w.svg',
+    },
+    {
+      title: 'Job Meetings List',
       href: '/meetings',
       icon: '/meetings.svg',
       iconW: '/meetings-w.svg',
