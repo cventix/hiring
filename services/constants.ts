@@ -11,3 +11,7 @@ export const NOTES_COLLECTION_ID = '61527f95bcfc4';
 // Callback URLs
 export const OAUTH_CALLBACK_URL = 'https://hiring.irantoptal.ir/';
 export const INVITATION_CALLBACK_URL = 'https://hiring.irantoptal.ir/';
+
+// Browser Timezone
+export const appTZ = "Asia/Tehran";
+export const localTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;

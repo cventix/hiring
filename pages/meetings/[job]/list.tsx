@@ -1,16 +1,16 @@
 import moment from 'moment-timezone';
-import { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import toast from 'react-hot-toast';
 import { withDashboardLayout } from '../../../layouts/dashboard-layout';
 import { WorkspaceContext } from '../../../contexts/workspace-context';
 import {
-  cancelMeeting,
+  deleteMeeting,
   getMeetingsList,
   IMeeting,
   sendMeetingReminder,
 } from '../../../services/meetings';
-import { appTZ } from '../../../services/constants';
 import { useRouter } from 'next/router';
+import produce from 'immer';
 
 interface IJobMeetings {
   [key: string]: IMeeting[];
@@ -18,6 +18,7 @@ interface IJobMeetings {
 
 const JobsPage: React.FC = () => {
   const [meetings, setMeetings] = useState<IJobMeetings>({});
+  const [selectedMeetings, setSelectedMeetings] = useState<string[]>([]);
   const [filter, setFilter] = useState<string>('ALL');
   const { workspace } = useContext(WorkspaceContext);
 
@@ -31,7 +32,7 @@ const JobsPage: React.FC = () => {
       toastId = toast.loading('Loading...');
       const filters: string[] =
         filter === 'ALL'
-          ? [`workspace=${workspace}`, `job.$id=${job}`, `status=NOT_STARTED`]
+          ? [`workspace=${workspace}`, `job.$id=${job}`]
           : [`workspace=${workspace}`, `job.$id=${job}`, `status=${filter}`];
       const list = await getMeetingsList(filters);
 
@@ -51,16 +52,22 @@ const JobsPage: React.FC = () => {
     }
   };
 
-  const handleCancelMeeting = async (meetingId: string) => {
+  const handleDeleteMeeting = async (meetingIds: string[]) => {
     const confirm = window.confirm(
-      'Are you sure you want to cancel the meeting?'
+      'Are you sure you want to delete the meeting(s)?'
     );
     if (confirm) {
-      toast.promise(cancelMeeting(meetingId), {
-        loading: 'Loading...',
-        success: 'Meeting canceled successfully',
-        error: 'Error Occured',
-      });
+      let toastId;
+      try {
+        toastId = toast.loading('Loading...');
+        await deleteMeeting(meetingIds);
+        await fetchJobsList();
+        setSelectedMeetings([]);
+        toast.success('Meeting(s) deleted successfully', { id: toastId });
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error.message, { id: toastId });
+      }
     }
   };
 
@@ -74,6 +81,36 @@ const JobsPage: React.FC = () => {
       console.log(error);
       toast.error(error.message, { id: toastId });
     }
+  };
+
+  const handleSelectMeeting = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = e.target;
+    setSelectedMeetings((prev) =>
+      produce(prev, (draft) => {
+        if (checked) draft.push(value);
+        else {
+          const index = draft.indexOf(value);
+          draft.splice(index, 1);
+        }
+      })
+    );
+  };
+
+  const handleSelectAllMeetings = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = e.target;
+    setSelectedMeetings((prev) =>
+      produce(prev, (draft) => {
+        if (checked) {
+          Object.values(meetings).map((i) =>
+            i.map((a) => {
+              if (draft.indexOf(a.$id) === -1) draft.push(a.$id);
+            })
+          );
+        } else {
+          draft.splice(0, draft.length);
+        }
+      })
+    );
   };
 
   useEffect(() => {
@@ -104,10 +141,23 @@ const JobsPage: React.FC = () => {
 
         {Object.keys(meetings).map((key) => (
           <div className="mb-5" key={key}>
-            <h3>{key}</h3>
+            <div className="d-flex justify-content-between align-items-center">
+              <h3>{key}</h3>
+              {selectedMeetings.length ? (
+                <button
+                  className="btn btn-outline-danger"
+                  onClick={() => handleDeleteMeeting(selectedMeetings)}
+                >
+                  Delete Selected ({selectedMeetings.length})
+                </button>
+              ) : null}
+            </div>
             <table className="table mt-5">
               <thead>
                 <tr>
+                  <th scope="col">
+                    <input type="checkbox" onChange={handleSelectAllMeetings} />
+                  </th>
                   <th scope="col">#</th>
                   <th scope="col">Summary</th>
                   <th scope="col">Reserved by</th>
@@ -118,7 +168,27 @@ const JobsPage: React.FC = () => {
               </thead>
               <tbody>
                 {meetings[key].map((meeting, index: number) => (
-                  <tr key={meeting.$id}>
+                  <tr
+                    key={meeting.$id}
+                    style={{
+                      backgroundColor:
+                        meeting.invitation && meeting.link
+                          ? '#fff2cb'
+                          : '#ffffff',
+                    }}
+                  >
+                    <td>
+                      <input
+                        type="checkbox"
+                        value={meeting.$id}
+                        checked={
+                          selectedMeetings.findIndex(
+                            (i) => i === meeting.$id
+                          ) !== -1
+                        }
+                        onChange={handleSelectMeeting}
+                      />
+                    </td>
                     <th scope="row">{index + 1}</th>
                     <td>{meeting.summary}</td>
                     <td>
@@ -126,14 +196,10 @@ const JobsPage: React.FC = () => {
                         ? meeting.invitation.name
                         : '-'}
                     </td>
-                    <td>
-                      {moment(meeting.start).tz(appTZ).format('YYYY/MM/DD')}
-                    </td>
-                    <td>{`${moment(meeting.start)
-                      .tz(appTZ)
-                      .format('HH:mm')} - ${moment(meeting.end)
-                      .tz(appTZ)
-                      .format('HH:mm')}`}</td>
+                    <td>{moment(meeting.start).format('YYYY/MM/DD')}</td>
+                    <td>{`${moment(meeting.start).format('HH:mm')} - ${moment(
+                      meeting.end
+                    ).format('HH:mm')}`}</td>
                     <td>
                       {meeting.status === 'MEETING_CANCELED' ? (
                         <span className="badge bg-secondary">Canceled</span>
@@ -164,7 +230,7 @@ const JobsPage: React.FC = () => {
                           <button
                             disabled={meeting.status === 'MEETING_CANCELED'}
                             className="btn btn-danger btn-sm"
-                            onClick={() => handleCancelMeeting(meeting.$id)}
+                            onClick={() => handleDeleteMeeting([meeting.$id])}
                           >
                             <img
                               src="/cancel.svg"

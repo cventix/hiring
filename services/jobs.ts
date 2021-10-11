@@ -50,3 +50,7 @@ export const updateJobStatus = async (
     isEnabled: status,
   });
 };
+
+export const deleteJob = async (jobId: string): Promise<void> => {
+  await appwrite.database.deleteDocument(JOBS_COLLECTION_ID, jobId);
+};

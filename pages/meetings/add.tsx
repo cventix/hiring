@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { useContext, useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -7,6 +7,7 @@ import { getJobsList, IJob } from '../../services/jobs';
 import { createMeeting, ICreateMeetingPayload } from '../../services/meetings';
 import { useAuth } from '../../hooks/useAuth';
 import { WorkspaceContext } from '../../contexts/workspace-context';
+import { appTZ } from '../../services/constants';
 
 type DefineMeetingFormType = {
   jobId: string;
@@ -58,6 +59,7 @@ const AddMeetingsPage: React.FC = () => {
         timeZone,
         duration,
       } = data;
+      const tz = timeZone ? timeZone : appTZ;
       const job = jobs.find((j) => j.$id === jobId);
       const startDate = moment(`${date} ${start}`);
       const endDate = moment(`${date} ${end}`);
@@ -68,11 +70,11 @@ const AddMeetingsPage: React.FC = () => {
           summary,
           description,
           duration,
-          start: startDate.toISOString(),
-          timezone: timeZone ? timeZone : 'Asia/Tehran',
+          start: startDate.format('YYYY-MM-DD HH:mm:ss'),
+          timezone: tz,
         };
         startDate.add(duration, 'minutes');
-        payload['end'] = startDate.toISOString();
+        payload['end'] = startDate.format('YYYY-MM-DD HH:mm:ss');
 
         if (job && account) {
           await createMeeting(job, account.$id, payload, workspace);
@@ -167,7 +169,7 @@ const AddMeetingsPage: React.FC = () => {
               />
             </div>
 
-            <div className="col-6">
+            {/* <div className="col-6">
               <label htmlFor="duration" className="form-label">
                 Timezone <span className="text-muted">(Optional)</span>
               </label>
@@ -178,7 +180,7 @@ const AddMeetingsPage: React.FC = () => {
                 placeholder="Asia/Tehran"
                 {...register('timeZone')}
               />
-            </div>
+            </div> */}
 
             <div className="col-6">
               <label htmlFor="duration" className="form-label">
@@ -198,6 +200,8 @@ const AddMeetingsPage: React.FC = () => {
                 <small className="text-danger">{errors.duration.message}</small>
               )}
             </div>
+
+            <div className="col-6"></div>
 
             <div className="col-4">
               <label htmlFor="date" className="form-label">

@@ -79,10 +79,18 @@ export const scheduleMeeting = async (
   return res.json();
 };
 
-export const cancelMeeting = async (meetingId: string): Promise<IMeeting> => {
-  return appwrite.database.updateDocument(MEETINGS_COLLECTION_ID, meetingId, {
-    status: 'MEETING_CANCELED',
-  });
+export const cancelMeeting = async (meetingIds: string[]): Promise<void> => {
+  for (let meetingId of meetingIds) {
+    await appwrite.database.updateDocument(MEETINGS_COLLECTION_ID, meetingId, {
+      status: 'MEETING_CANCELED',
+    });
+  }
+};
+
+export const deleteMeeting = async (meetingIds: string[]): Promise<void> => {
+  for (let meetingId of meetingIds) {
+    await appwrite.database.deleteDocument(MEETINGS_COLLECTION_ID, meetingId);
+  }
 };
 
 export const sendMeetingReminder = async (

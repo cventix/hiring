@@ -197,17 +197,15 @@ const SidebarLayout: React.FC<IProps> = ({ account, teams }) => {
         </li>
       </ul>
 
-      {account && !account.prefs.token && (
-        <div className="card p-2">
-          <button
-            className="btn btn-outline-secondary fw-bold"
-            onClick={handleAuthWithGoogle}
-          >
-            <img src="/google.svg" alt="google" width="25" height="25" />
-            <span className="mx-2">Auth With Google</span>
-          </button>
-        </div>
-      )}
+      <div className="card p-2">
+        <button
+          className="btn btn-outline-secondary fw-bold"
+          onClick={handleAuthWithGoogle}
+        >
+          <img src="/google.svg" alt="google" width="25" height="25" />
+          <span className="mx-2">Auth With Google</span>
+        </button>
+      </div>
     </div>
   );
 };
