@@ -4,7 +4,12 @@ import { useContext, useEffect, useState } from 'react';
 import Switch from 'react-switch';
 import produce from 'immer';
 import { withDashboardLayout } from '../../layouts/dashboard-layout';
-import { getJobsList, IJob, updateJobStatus } from '../../services/jobs';
+import {
+  deleteJob,
+  getJobsList,
+  IJob,
+  updateJobStatus,
+} from '../../services/jobs';
 import toast from 'react-hot-toast';
 import { WorkspaceContext } from '../../contexts/workspace-context';
 
@@ -59,6 +64,22 @@ const JobsPage: React.FC = () => {
     return (status && status.status) || false;
   };
 
+  const handleDeleteJob = async (jobId: string) => {
+    const confirm = window.confirm('Are you sure you want to delete the Job?');
+    if (confirm) {
+      let toastId;
+      try {
+        toastId = toast.loading('Loading...');
+        await deleteJob(jobId);
+        await fetchJobsList();
+        toast.success('Job deleted successfully', { id: toastId });
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error.message, { id: toastId });
+      }
+    }
+  };
+
   useEffect(() => {
     if (workspace) fetchJobsList();
   }, [workspace]);
@@ -87,6 +108,7 @@ const JobsPage: React.FC = () => {
               <th scope="col">Title</th>
               <th scope="col">Status</th>
               <th scope="col">Reserved Meetings</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -111,6 +133,19 @@ const JobsPage: React.FC = () => {
                 </td>
                 <td>
                   <Link href={`/meetings/${job.$id}/list`}>Show List</Link>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDeleteJob(job.$id)}
+                  >
+                    <img
+                      src="/cancel.svg"
+                      alt="cancel meeting"
+                      title="cancel meeting"
+                    />
+                  </button>
                 </td>
               </tr>
             ))}
