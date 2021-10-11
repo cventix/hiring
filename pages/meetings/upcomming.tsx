@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { withDashboardLayout } from '../../layouts/dashboard-layout';
 import { WorkspaceContext } from '../../contexts/workspace-context';
 import {
-  cancelMeeting,
+  deleteMeeting,
   getMeetingsList,
   IMeeting,
   sendMeetingReminder,
@@ -64,12 +64,12 @@ const JobsPage: React.FC = () => {
     }
   };
 
-  const handleCancelMeeting = async (meetingId: string) => {
+  const handleDeleteMeeting = async (meetingIds: string[]) => {
     const confirm = window.confirm(
       'Are you sure you want to cancel the meeting?'
     );
     if (confirm) {
-      toast.promise(cancelMeeting(meetingId), {
+      toast.promise(deleteMeeting(meetingIds), {
         loading: 'Loading...',
         success: 'Meeting canceled successfully',
         error: 'Error Occured',
@@ -181,7 +181,7 @@ const JobsPage: React.FC = () => {
                             <button
                               disabled={meeting.status === 'MEETING_CANCELED'}
                               className="btn btn-danger btn-sm"
-                              onClick={() => handleCancelMeeting(meeting.$id)}
+                              onClick={() => handleDeleteMeeting([meeting.$id])}
                             >
                               <img
                                 src="/cancel.svg"
