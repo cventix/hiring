@@ -3,7 +3,11 @@ import { useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { WorkspaceContext } from '../../../contexts/workspace-context';
 import { withDashboardLayout } from '../../../layouts/dashboard-layout';
-import { getInvitations, IInvitation } from '../../../services/invitations';
+import {
+  getInvitations,
+  IInvitation,
+  sendInvitationManually,
+} from '../../../services/invitations';
 import { AddNoteModal } from '../../invitations';
 
 const JobInvitationsPage: React.FC = () => {
@@ -40,6 +44,18 @@ const JobInvitationsPage: React.FC = () => {
     setShowModal(false);
   };
 
+  const handleResendInvitation = async (invitation: IInvitation) => {
+    let toastId;
+    try {
+      toastId = toast.loading('Loading...');
+      await sendInvitationManually(invitation);
+      toast.success('Invitation sent successfully', { id: toastId });
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message, { id: toastId });
+    }
+  };
+
   useEffect(() => {
     if (query.job && typeof query.job === 'string') fetchJob(query.job);
   }, [query]);
@@ -61,7 +77,7 @@ const JobInvitationsPage: React.FC = () => {
               <th scope="col">Name</th>
               <th scope="col">Email</th>
               <th scope="col">Mobile</th>
-              <th scope="col">Submitted At</th>
+              <th scope="col">Submitted</th>
               <th scope="col">Actions</th>
             </tr>
           </thead>
@@ -73,12 +89,18 @@ const JobInvitationsPage: React.FC = () => {
                 <td>{invitation.email}</td>
                 <td>{invitation.mobile}</td>
                 <td>{invitation.submittedAt}</td>
-                <td>
+                <td style={{ minWidth: 180 }}>
                   <button
-                    className="btn btn-primary btn-sm"
+                    className="btn btn-primary btn-sm mx-1"
                     onClick={() => handleAddNote(invitation)}
                   >
                     Add Note
+                  </button>
+                  <button
+                    className="btn btn-warning btn-sm mx-1"
+                    onClick={() => handleResendInvitation(invitation)}
+                  >
+                    Re-Send
                   </button>
                 </td>
               </tr>

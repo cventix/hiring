@@ -152,6 +152,7 @@ const JobsPage: React.FC = () => {
             >
               <option value="ALL">ALL</option>
               <option value="MEETING_RESERVED">Reserved</option>
+              <option value="MEETING_ATTENDED">Attended</option>
               <option value="MEETING_CANCELED">Canceled</option>
             </select>
           </div>

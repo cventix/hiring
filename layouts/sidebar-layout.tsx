@@ -4,6 +4,7 @@ import { ITeam } from '../services/teams';
 import { useRouter } from 'next/router';
 import { WorkspaceContext } from '../contexts/workspace-context';
 import { useContext } from 'react';
+import moment from 'moment';
 
 interface IProps {
   account: IAccount | null;
@@ -132,6 +133,8 @@ const SidebarLayout: React.FC<IProps> = ({ account, teams }) => {
     }
   };
 
+  const showGoogleAuthLogin = account && !account.prefs.token;
+
   const SidebarItem: React.FC<ISidebarItem> = ({ title, href, icon }) => {
     return (
       <li className="list-group-item d-flex justify-content-between lh-sm">
@@ -197,15 +200,17 @@ const SidebarLayout: React.FC<IProps> = ({ account, teams }) => {
         </li>
       </ul>
 
-      <div className="card p-2">
-        <button
-          className="btn btn-outline-secondary fw-bold"
-          onClick={handleAuthWithGoogle}
-        >
-          <img src="/google.svg" alt="google" width="25" height="25" />
-          <span className="mx-2">Auth With Google</span>
-        </button>
-      </div>
+      {showGoogleAuthLogin && (
+        <div className="card p-2">
+          <button
+            className="btn btn-outline-secondary fw-bold"
+            onClick={handleAuthWithGoogle}
+          >
+            <img src="/google.svg" alt="google" width="25" height="25" />
+            <span className="mx-2">Auth With Google</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

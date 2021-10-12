@@ -43,7 +43,11 @@ export interface IInvitationsList {
 export const getInvitations = async (
   filters?: string[]
 ): Promise<IInvitationsList> => {
-  return appwrite.database.listDocuments(INVITATIONS_COLLECTION_ID, filters, 100);
+  return appwrite.database.listDocuments(
+    INVITATIONS_COLLECTION_ID,
+    filters,
+    100
+  );
 };
 
 export const addInvitationNote = async (
@@ -72,5 +76,13 @@ export const addInvitationNote = async (
     INVITATIONS_COLLECTION_ID,
     invitation.$id,
     { notes }
+  );
+};
+
+export const sendInvitationManually = async (invitation: IInvitation) => {
+  // TODO: Remove * permission from execution
+  return appwrite.functions.createExecution(
+    '6149a23664ced',
+    JSON.stringify(invitation)
   );
 };
