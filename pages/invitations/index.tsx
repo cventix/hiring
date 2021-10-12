@@ -26,13 +26,13 @@ const InvitationsPage: React.FC = () => {
     let toastId;
     try {
       toastId = toast.loading('Loading...');
-      const list = await getInvitations([
-        `workspace=${workspace}`,
-        `job!=null`,
-      ]);
+      const list = await getInvitations([`workspace=${workspace}`]);
 
       const invitations = list.documents.reduce(
         (state: IJobInvitations, current: IInvitation) => {
+          if(!current.job) {
+            return state;
+          }
           if (!state[current.job.title]) state[current.job.title] = [];
           state[current.job.title].push(current);
           return state;
